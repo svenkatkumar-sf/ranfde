@@ -43,10 +43,7 @@ put real hostnames, IPs, or architecture diagrams in this file.
 
 ## Week 1 — what your machine told you
 
-<!--
-  Paste the egress probe output from Session 1 here. It is evidence, and it
-  frequently disagrees with what people believe about their own network.
--->
+Oct 8, 2026
 
 host	why	status	signed by
 pypi.org	Python packages	OK	GlobalSign nv-sa
