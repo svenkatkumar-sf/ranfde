@@ -6,9 +6,9 @@
   template. That is on purpose.
 -->
 
-**Department:** <!-- your answer here -->
+**Department:** Customer Success
 
-**Working title:** <!-- your answer here -->
+**Working title:** CSM Account Action Prioritizer
 
 ---
 
@@ -16,23 +16,23 @@
 
 **Who has it?** One real role, not a department.
 
-<!-- your answer here -->
+Customer Success Manager
 
 **What are they trying to do?**
 
-<!-- your answer here -->
+They need to go to multiple systems to find the next best action and accounts. More than the work itself, Prioritizing and getting to know what needs to be done takes linger
 
 **How do they handle it today?**
 
-<!-- your answer here -->
+Manually switching between Slack, Gmail, OrgCS, Org62 — piecing it together per account. 
 
 **What does that cost — time, money, risk, or relationships?**
 
-<!-- your answer here -->
+Time lost to context-switching across accounts; risk of missing a renewal signal or a promised follow-up
 
 **The problem in one sentence. No solution in it.**
 
-<!-- your answer here -->
+A CSM managing multiple accounts loses hours each week piecing together account context from four separate systems to figure out what needs attention.
 
 ---
 
@@ -40,11 +40,11 @@
 
 **What does the new world look like for that person?**
 
-<!-- your answer here -->
+I focus entirely on customer work — analyzing data, reading accounts, adding value — instead of operational tasks.
 
 **How would the firm measure it? Which numbers should move?**
 
-<!-- your answer here -->
+OpEx reduced, customer engagements increase, adoption grows, expansion revenue goes up.
 
 ---
 
@@ -52,15 +52,15 @@
 
 **Your solution in one sentence.**
 
-<!-- your answer here -->
+A chat interface that gives a CSM the next best action along with the tools and data to complete it.
 
 **Input → Output.** Be specific enough that someone could build it wrong and you
 would notice.
 
 | | |
 | --- | --- |
-| **In** | <!-- your answer here --> |
-| **Out** | <!-- your answer here --> |
+| **In** | Account name + plain-text context (meeting notes, open items, renewal date, health signals) |
+| **Out** | Prioritized list of 3–5 next actions, each with category (Operations / Cadence / Renewal) and time horizon|
 
 ---
 

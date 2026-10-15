@@ -11,6 +11,7 @@ If you cannot name what you did not do, you did not choose.
 
 | Week | Decision | What you rejected | Why | What would change your mind |
 | --- | --- | --- | --- | --- |
+| 1 | Pipeline: user pastes account context manually, single LLM call returns prioritized actions | Full agent that autonomously fetches data from OrgCS / Org62 / Gmail | No live integrations exist yet; validating the core use case end-to-end first is more valuable than building integrations before the output is trusted | Each integration added (OrgCS → Org62 → Gmail → Admin APIs) makes one pipeline step autonomous — the design is modular so features ship in releases without a rewrite |
 | 3 | <!-- retrieval approach --> | <!-- --> | <!-- --> | <!-- --> |
 | 5 | <!-- agent architecture --> | <!-- --> | <!-- --> | <!-- --> |
 | 6 | <!-- guardrail level --> | <!-- --> | <!-- --> | <!-- --> |

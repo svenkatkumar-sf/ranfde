@@ -13,6 +13,9 @@ from gradio import Server
 
 from llm import stream_reply
 
+from pydantic import BaseModel
+from enum import Enum
+
 app = Server()
 
 FRONTEND = Path(__file__).parent / "frontend" / "index.html"
@@ -28,6 +31,24 @@ def chat(message: str, history: list | None = None) -> str:
     """Stream a reply to one user message."""
     yield from stream_reply(message, history)
 
+@app.api(name="next_actions")
+def next_actions(account_name: str, context: str) -> str:
+    """Return prioritized next actions for a CSM account."""
+    prompt = f"""You are an expert CSM assistant. Given the following context for account {account_name},
+return a prioritized list of 3-5 next best actions ranked by urgency.
+
+For each action include:
+- The action to take
+- Category (Operations / Cadence / Renewal / Engagement)
+- Time horizon (immediate / this week / this month / this quarter)
+
+Context:
+{context}
+
+If there is not enough information to suggest actions, say so clearly."""
+
+    yield from stream_reply(prompt)
+
 
 # --- The frontend ------------------------------------------------------------
 # Defining a route at "/" replaces Gradio's default UI with ours.
@@ -42,6 +63,29 @@ def homepage() -> str:
 def health() -> dict:
     """Your future ops team will thank you. Load balancers need this."""
     return {"status": "ok", "model": os.getenv("LLM_MODEL", "gpt-4.1-mini")}
+
+class UrgencyLevel(str, Enum):
+      IMMEDIATE = "immediate"
+      THIS_WEEK = "this week"
+      THIS_MONTH = "this month"
+      THIS_QUARTER = "this quarter"
+
+class Request(BaseModel):
+      account_name: str
+      context: str  # meeting notes, open items, renewal date, health signals
+
+class Action(BaseModel):
+      action: str
+      category: str   # Operations / Cadence / Renewal / etc.
+      urgency: UrgencyLevel    # e.g. "3 days", "2 weeks", "3 months"
+
+class Response(BaseModel):
+      account_name: str
+      actions: list[Action]
+      message: str | None = None
+
+def solve(request: Request) -> Response:
+    ...
 
 
 if __name__ == "__main__":
