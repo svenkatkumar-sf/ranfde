@@ -546,6 +546,18 @@ challenge, which carries the full detail.
 
 ---
 
+## Bring it to work
+
+**The project:** Building a CSM Assistant for Customer Success Managers at Salesforce — helping them draft account communications, prep for renewals, and surface next best actions from account context.
+
+**What I would swap:**
+
+- **Data:** Real account interaction data from OrgCS can be used, but it must stay local — it cannot leave the network or be used to train any LLM. Generation would be seeded from real account descriptions, not raw records.
+- **Model/endpoint:** The current Azure OpenAI `gpt-5-mini` endpoint works for prototyping. For production, the model and endpoint would be evaluated on cost, latency, and data-residency requirements — a swap to a Salesforce-internal or on-prem model is likely depending on those constraints.
+- **Approval:** Director-level approval for the use case is already secured. Next step is a live demo to stakeholders to showcase capabilities, then work with the platform team on the deployment path (container registry, secrets management, network egress confirmation).
+
+---
+
 ## Where this goes next
 
 | Week | What it adds to this data |
