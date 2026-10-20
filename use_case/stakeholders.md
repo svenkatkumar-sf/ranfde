@@ -12,6 +12,7 @@ Use roles, not names. This is a public repo.
 | Week | Who (role) | What you asked | What you learned | Follow-up |
 | --- | --- | --- | --- | --- |
 | 1 | Director, Customer Success | Where would a containerized internal app run? Who would use it? | EKS on AWS; Okta auth; Azure OpenAI is already whitelisted; realized building a real product for the team is achievable | Confirm internal container registry and secrets management with platform team |
+| 2 | Fellow CSM | Showed 20 synthetic rows: which would never happen? What's missing? Would anything worry you if this were public? | CSMs don't have access to operational logs or platform configs — those are ops/customer territory. Technical next-step suggestions were right in intent but wrong in execution — CSMs can't make infra changes unilaterally; they escalate. Competitive analysis and marketing campaign assistance are valid CSM activities — the assistant over-declined those. Tone needs to be warmer and more account-specific since CSMs manage multiple accounts. | Regenerate with reframed infra scenarios (escalation, not direct action); revisit decline rules for competitive research and marketing support. |
 
 ---
 
