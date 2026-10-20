@@ -752,31 +752,31 @@ Fill these in directly in this README, and commit it.
 
 **Who did you ask?** (role, not name)
 
-<!-- Your answer here -->
+Director, Customer Success
 
 **Where would this application run?**
 
-<!-- Your answer here -->
+EKS (AWS Elastic Kubernetes Service) — deployed as a container, shared across the Customer Success team. A secondary option is distributing the Docker image so each CSM runs it locally, keeping logs local and avoiding load on the shared cluster.
 
 **Which cloud provider, if any?**
 
-<!-- Your answer here -->
+AWS
 
 **How would users authenticate?**
 
-<!-- Your answer here -->
+Okta — standard SSO used across all corporate systems.
 
 **Could this container reach an external LLM API? If not, what would it use instead?**
 
-<!-- Your answer here -->
+Yes — Azure OpenAI. All corporate systems are whitelisted to access it, so no egress restriction blocks the model call.
 
 **What surprised you in this conversation?**
 
-<!-- Your answer here -->
+The realization that I am capable of building something real that everyone could use — that the gap between "idea" and "product" is smaller than I assumed.
 
 **What would you have to change about this app to make it deployable there?**
 
-<!-- Your answer here -->
+Two things: make the UI more targeted to CSM workflows (account name lookup, structured output display), and make the backend modular so integrations (OrgCS, Org62, Gmail, Admin APIs) can be added one at a time without rewriting the core.
 
 Then log the answers in [`use_case/ecosystem.md`](../../use_case/ecosystem.md)
 and the person you asked in

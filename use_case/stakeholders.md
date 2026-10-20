@@ -11,7 +11,7 @@ Use roles, not names. This is a public fork.
 
 | Week | Who (role) | What you asked | What you learned | Follow-up |
 | --- | --- | --- | --- | --- |
-| 1 | <!-- e.g. Platform Engineering lead --> | <!-- where would a container run here? --> | <!-- --> | <!-- --> |
+| 1 | Director, Customer Success | Where would a containerized internal app run? Who would use it? | EKS on AWS; Okta auth; Azure OpenAI is already whitelisted; realized building a real product for the team is achievable | Confirm internal container registry and secrets management with platform team |
 
 ---
 

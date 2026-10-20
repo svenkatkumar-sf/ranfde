@@ -18,16 +18,16 @@ put real hostnames, IPs, or architecture diagrams in this file.
 
 **Who did you ask?** (role, not name)
 
-<!-- your answer here -->
+Director, Customer Success
 
 | # | Question | Answer |
 | :---: | --- | --- |
-| 1 | Where do internal apps run? (k8s, ECS, App Service, a VM someone maintains) | <!-- --> |
-| 2 | Which cloud? AWS, Azure, GCP, on-prem, several? | <!-- --> |
-| 3 | Is there an internal container registry? | <!-- --> |
-| 4 | How do users log in? (Okta, Entra ID, Ping, SAML, homegrown) | <!-- --> |
-| 5 | Can the app reach the internet? Egress proxy? Allowlist? | <!-- --> |
-| 6 | Where do secrets come from? (Vault, Secrets Manager, Key Vault) | <!-- --> |
+| 1 | Where do internal apps run? (k8s, ECS, App Service, a VM someone maintains) | EKS (AWS Elastic Kubernetes Service) — or distributed as a Docker image for local runs |
+| 2 | Which cloud? AWS, Azure, GCP, on-prem, several? | AWS (primary); Azure OpenAI used for the LLM endpoint |
+| 3 | Is there an internal container registry? | To be confirmed with platform team |
+| 4 | How do users log in? (Okta, Entra ID, Ping, SAML, homegrown) | Okta SSO |
+| 5 | Can the app reach the internet? Egress proxy? Allowlist? | Yes — Azure OpenAI is whitelisted for all corporate systems |
+| 6 | Where do secrets come from? (Vault, Secrets Manager, Key Vault) | To be confirmed with platform team |
 | 7 | Who approves a deployment, and what review does it need? | <!-- --> |
 | 8 | Is there an approved internal LLM endpoint already? | <!-- --> |
 
