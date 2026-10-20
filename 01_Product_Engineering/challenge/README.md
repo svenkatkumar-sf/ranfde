@@ -1015,6 +1015,38 @@ build against it — measuring it afterwards is a different, weaker thing.
 
 ---
 
+## Bring it to work
+
+### Napkin math
+
+| Line | Value | Source |
+| --- | --- | --- |
+| Input tokens per call | 151 | **measured** (count_tokens on a typical next_actions prompt) |
+| Output tokens per call | ~300 | **measured** (average response in vibe check) |
+| Price per 1M input tokens | ~$0.15 | **looked up** — verify at Azure pricing page for gpt-5-mini |
+| Price per 1M output tokens | ~$0.60 | **looked up** — verify at Azure pricing page for gpt-5-mini |
+| Cost per call | ~$0.0002 | calculated |
+| Calls per CSM per day | 15 | **looked up** (estimated — 15 accounts reviewed daily) |
+| Model cost per CSM per year | ~$0.75 | 0.0002 × 15 × 250 |
+| Minutes saved per account review | 5 min | **looked up** (charter: CSMs lose hours context-switching) |
+| Loaded hourly rate | ~$75/hr | **looked up** (industry estimate) |
+| Human cost per CSM per year | ~$23,400 | 5/60 × 75 × 15 × 250 |
+| **Ratio** | **~31,000×** | human / model |
+
+Ratio is well above 20× — model cost is negligible. The constraint is adoption and trust, not token spend.
+
+**p95 latency target:** Under 10 seconds. CSMs use this during account prep and live calls — a 30-second wait breaks the workflow. Cost is not the blocker; slow responses are.
+
+### What I would swap
+
+**Data:** Manually pasted context would be replaced by scheduler-based triggers pulling live account data from OrgCS, Org62, and open ticket queues — one integration at a time per release. The golden examples stand in for that data today.
+
+**Model or endpoint:** Would switch to the firm's approved internal AI gateway (Azure OpenAI already whitelisted). Model choice subject to AI team approval — a smaller or fine-tuned model may perform better on CSM-specific vocabulary once enough real examples exist.
+
+**Access or approval needed:** AI team sign-off on model selection; Platform Engineering for EKS deployment and Okta SSO wiring; legal/compliance review before processing customer account data at scale.
+
+---
+
 ## What this challenge deposits for later
 
 Week 1 is small on purpose, but six of its outputs are withdrawn much later.
