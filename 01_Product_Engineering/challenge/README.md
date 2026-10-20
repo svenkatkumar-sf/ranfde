@@ -855,55 +855,62 @@ demo.
 Run each prompt through your app. Name the capability it tests.
 
 **1.** *Explain object-oriented programming in simple terms to a complete beginner.*
-**Aspect tested:** <!-- your answer --> **Response:** <!-- your answer -->
+**Aspect tested:** Instruction-following and explanation clarity **Response:** Clear, structured answer with analogy (blueprint/house), core concepts, and a Python code example. Correct and accessible.
 
 **2.** *Read a paragraph of your choosing and summarize the key points.*
-**Aspect tested:** <!-- your answer --> **Response:** <!-- your answer -->
+**Aspect tested:** Summarization and factual grounding **Response:** Summarized Pride and Prejudice opening accurately — extracted 4 key points without inventing content.
 
 **3.** *Write a short, imaginative story (100–150 words) about a robot finding friendship in an unexpected place.*
-**Aspect tested:** <!-- your answer --> **Response:** <!-- your answer -->
+**Aspect tested:** Creative generation and format adherence **Response:** Met word count, original narrative (robot + crow in a laundromat), good tone.
 
 **4.** *If a store sells apples in packs of 4 and oranges in packs of 3, how many packs of each do I need to get exactly 12 apples and 9 oranges?*
-**Aspect tested:** <!-- your answer --> **Response:** <!-- your answer -->
+**Aspect tested:** Basic reasoning and arithmetic **Response:** Correct — 3 packs of apples, 3 packs of oranges. Clean and direct.
 
 **5.** *Rewrite a paragraph of your choosing in a professional, formal tone.*
-**Aspect tested:** <!-- your answer --> **Response:** <!-- your answer -->
+**Aspect tested:** Tone and register transformation **Response:** Successfully shifted from casual check-in to formal business correspondence without losing meaning.
 
 **❓ Are the answers correct and useful?**
-<!-- your answer -->
+Yes — all five passed. The model handles general tasks competently. No obvious hallucinations in this pass.
 
 ### Pass 2 — Your actual use case
 
 Test it with prompts from the problem you care about — your five golden
 examples from Step 7 are the obvious first three.
 
-**Prompt:** <!-- --> **Result:** <!-- -->
-**Prompt:** <!-- --> **Result:** <!-- -->
-**Prompt:** <!-- --> **Result:** <!-- -->
+**Prompt:** "What is the next best action for ACME?" (no context provided) **Result:** Generic business advice — asked for more context before answering. Correct behaviour but highlights that the app needs account context to be useful.
+
+**Prompt:** "Does the maintenance coming up next weekend affect ACME? They are on CloudHub." **Result:** Detailed CloudHub-aware answer covering rolling restarts, worker count impact, and a practical checklist. Useful for a CSM with no engineering background.
+
+**Prompt:** "Do we need to do a Business Value Study for ACME with renewal coming up in January 2027?" **Result:** Yes/no verdict up front, then a 6-step plan with timeline. Directly applicable to real renewal work.
 
 **❓ Does it behave the way you expected? Why or why not?**
-<!-- your answer -->
+Mostly yes. The BVS and maintenance answers were genuinely useful. The "next best action" prompt without context correctly asked for more information — but a real CSM tool should know the account context without having to paste it in every time. That gap is the main roadmap item.
 
 ### Pass 3 — Where it falls down
 
 Try things it cannot do yet — real-time data, memory across sessions, access to
 your systems.
 
-**Prompt:** <!-- --> **Result:** <!-- -->
-**Prompt:** <!-- --> **Result:** <!-- -->
+**Prompt:** "Pull the current health score for ACME from OrgCS and tell me if I should be worried." **Result:** Correctly said it cannot access OrgCS, then gave a generic guide on how to check manually. Limitation exposed: no live data integration.
+
+**Prompt:** "Earlier you told me ACME's renewal is in January — what did we agree the next step was?" **Result:** Hallucinated. Claimed "we agreed to kick off the BVS" — but the model has no memory of previous turns in a new session. It invented a prior agreement confidently.
 
 **❓ What are the real limitations of this application?**
-<!-- your answer -->
+1. No live data — cannot pull account health, open tickets, or renewal dates from OrgCS, Org62, or any internal system. User must paste context manually.
+2. No persistent memory — each session starts blank. Cross-session continuity is fabricated, not recalled.
+3. No account awareness — without pasted context, responses are generic business advice, not CSM-specific.
+4. No structured output in the chat interface — responses are free text; a real tool would return categorized, actionable items.
 
 ### ✅ Deliverables
 
 1. All three passes filled in, with the **aspect tested** named for each
    prompt — not just the response pasted.
 2. A written list of this application's real limitations.
-3. **One or two sentences** on what a vibe check is worth as evidence. You will
-   get different wording on two runs of the same prompt and judge both "fine" —
-   name one thing you would have to add before the result could be compared
-   across two versions of your application.
+3. **What a vibe check is worth as evidence:** A vibe check confirms the model is functional and catches obvious failures, but it cannot prove the app is reliably good — two runs of the same prompt return different wording and you would judge both "fine." To compare across versions, you would need a fixed set of scored test cases (the golden examples) with a consistent rubric, so that "better" has a measurable meaning.
+
+> Keep that list. Most of the next six weeks are about dismantling it: retrieval
+> for the knowledge gaps, evals so you know whether any of it worked, tools for
+> the systems it cannot reach, and memory for what it forgets.
 
 > Keep that list. Most of the next six weeks are about dismantling it: retrieval
 > for the knowledge gaps, evals so you know whether any of it worked, tools for
