@@ -16,5 +16,6 @@
         "**/.settings": true,
         "**/.exchange_modules_tmp": true,
         ".mule": true
-    }
+    },
+    "python.terminal.useEnvFile": true
 }

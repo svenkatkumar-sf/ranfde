@@ -6,8 +6,11 @@ split is the point: the API is the product, the UI is disposable.
 """
 
 import os
+import json
 from pathlib import Path
 
+import numpy as np
+import litellm
 from fastapi.responses import HTMLResponse
 from gradio import Server
 
@@ -15,11 +18,65 @@ from llm import stream_reply
 
 from pydantic import BaseModel
 from enum import Enum
+from rank_bm25 import BM25Okapi
+from helpers.config import from_env
+from helpers.llm import chat as llm_chat
+
 
 app = Server()
 
 FRONTEND = Path(__file__).parent / "frontend" / "index.html"
+ROOT = Path(__file__).parent.parent.parent
+CORPUS_PATH = ROOT / "use_case" / "data" / "synthetic_v1.jsonl"
+EMB_CACHE = Path(__file__).parent / ".corpus_embeddings.npy"
 
+cfg = from_env(ROOT)
+
+# ── Retrieval setup (loaded once at startup) ─────────────────────────
+
+_rows = [json.loads(l) for l in CORPUS_PATH.read_text().splitlines() if l.strip()]
+_texts = [r["input"] for r in _rows]
+_bm25 = BM25Okapi([t.lower().split() for t in _texts])
+_corpus_vecs: np.ndarray = np.load(EMB_CACHE) if EMB_CACHE.exists() else None  # type: ignore
+
+TOP_K = 5
+DECLINE_THRESHOLD = 0.46  # cosine similarity below this → clearly off-domain, skip LLM call
+
+
+def _embed_query(question: str) -> np.ndarray:
+    model = os.getenv("EMBED_MODEL", "text-embedding-3-small")
+    api_base = os.getenv("EMBED_API_BASE") or os.getenv("AZURE_API_BASE")
+    full_model = f"azure/{model}" if api_base and "azure" in api_base else model
+    resp = litellm.embedding(
+        model=full_model,
+        input=[question],
+        api_base=api_base,
+        api_key=os.getenv("EMBED_API_KEY") or os.getenv("AZURE_API_KEY"),
+        api_version=os.getenv("EMBED_API_VERSION", "2025-04-01-preview"),
+    )
+    return np.array(resp.data[0]["embedding"], dtype=np.float32)
+
+
+def _hybrid_retrieve(question: str) -> tuple[list[int], float]:
+    """Return (top-k indices, best cosine similarity) using BM25+dense RRF."""
+    # BM25 ranking
+    bm25_order: list[int] = _bm25.get_scores(question.lower().split()).argsort()[::-1].tolist()
+
+    # Dense ranking + top cosine for decline detection
+    q_vec = _embed_query(question)
+    c = _corpus_vecs / (np.linalg.norm(_corpus_vecs, axis=1, keepdims=True) + 1e-9)
+    q_norm = q_vec / (np.linalg.norm(q_vec) + 1e-9)
+    sims = c @ q_norm
+    dense_order: list[int] = sims.argsort()[::-1].tolist()
+    best_sim = float(sims.max())
+
+    # RRF fusion
+    scores: dict[int, float] = {}
+    for rank_list in [bm25_order, dense_order]:
+        for rank, idx in enumerate(rank_list):
+            scores[idx] = scores.get(idx, 0.0) + 1.0 / (60 + rank + 1)
+    top_k = sorted(scores, key=lambda i: -scores[i])[:TOP_K]
+    return top_k, best_sim
 
 # --- The API -----------------------------------------------------------------
 # The `-> str` return annotation is REQUIRED. Without it Gradio infers zero
@@ -28,8 +85,24 @@ FRONTEND = Path(__file__).parent / "frontend" / "index.html"
 
 @app.api(name="chat")
 def chat(message: str, history: list | None = None) -> str:
-    """Stream a reply to one user message."""
-    yield from stream_reply(message, history)
+    """Answer a free-form question about your accounts, grounded in retrieved records."""
+    top_k, best_sim = _hybrid_retrieve(message)
+    if best_sim >= DECLINE_THRESHOLD:
+        hits = [(i, _rows[i]) for i in top_k]
+        ctx = "\n\n".join(f"[Source {i}] {row['input']}\n→ {row['output']}" for i, row in hits)
+        system = (
+            "You are Maxi, an AI CSM assistant. "
+            "Answer using ONLY the retrieved account records below. "
+            "If they don't address the question, say so — do not invent information.\n\n"
+            f"Retrieved records:\n{ctx}"
+        )
+    else:
+        system = (
+            "You are Maxi, an AI CSM assistant. "
+            "The question appears to be outside the scope of the account knowledge base — "
+            "say so briefly and suggest rephrasing with a specific account name."
+        )
+    yield from stream_reply(message, history, system=system)
 
 @app.api(name="next_actions")
 def next_actions(account_name: str, context: str) -> str:
@@ -81,11 +154,85 @@ class Action(BaseModel):
 
 class Response(BaseModel):
       account_name: str
+      sources: list[str] = []
       actions: list[Action]
       message: str | None = None
 
-def solve(request: Request) -> Response:
-    ...
+@app.api(name="solve")
+def solve(account_name: str, context: str) -> str:
+    """Retrieve account records and return prioritized next actions with sources.
+
+    Given a Salesforce account name and plain-text context (meeting notes, open
+    cases, renewal signals), this tool retrieves the most relevant account records
+    from the CSM knowledge base using hybrid BM25+dense retrieval, then returns
+    3-5 prioritized next actions grounded in those records.
+
+    Args:
+        account_name: The Salesforce account name (e.g. "NovaTech", "OrionSystems").
+        context: Free-text context — meeting notes, open items, health signals,
+                 renewal date, or any question about the account.
+
+    Returns:
+        JSON string matching the Response schema:
+        {
+          "account_name": str,
+          "sources": list[str],   # record IDs retrieved; cite these in follow-up
+          "actions": [{"action": str, "category": str, "urgency": str}, ...],
+          "message": str | null   # set when the corpus cannot answer the question
+        }
+
+    Decline behaviour: returns an empty actions list and a message when the
+    retrieved records score below the similarity threshold — the corpus does not
+    contain an answer rather than fabricating one.
+    """
+    query = f"{account_name}: {context}"
+    top_k, best_sim = _hybrid_retrieve(query)
+
+    if best_sim < DECLINE_THRESHOLD:
+        return Response(
+            account_name=account_name,
+            sources=[],
+            actions=[],
+            message="No relevant records found in the knowledge base for this question.",
+        ).model_dump_json()
+
+    hits = [(i, _rows[i]) for i in top_k]
+    retrieved_context = "\n\n".join(
+        f"[Source {i}] {row['input']}\n→ {row['output']}" for i, row in hits
+    )
+
+    prompt = f"""You are a CSM assistant. A user asked:
+
+"{context}"
+
+The following records were retrieved from the knowledge base:
+
+{retrieved_context}
+
+IMPORTANT: Only answer if these records directly address the question. If they do not — even if they are from the same domain — return ONLY:
+{{"decline": true, "message": "<one sentence: what information is missing>"}}
+
+If the records do address the question, return ONLY a JSON array of 3-5 prioritized next actions for {account_name}. No other text.
+Format: [{{"action": "...", "category": "Operations|Cadence|Renewal|Engagement", "urgency": "immediate|this week|this month|this quarter"}}]"""
+
+    raw = llm_chat(cfg, prompt).strip().strip("```json").strip("```").strip()
+    parsed = json.loads(raw)
+
+    if isinstance(parsed, dict) and parsed.get("decline"):
+        return Response(
+            account_name=account_name,
+            sources=[str(i) for i in top_k],
+            actions=[],
+            message=parsed.get("message", "The knowledge base does not contain enough information to answer this question."),
+        ).model_dump_json()
+
+    actions = [Action(**a) for a in parsed]
+    return Response(
+        account_name=account_name,
+        actions=actions,
+        sources=[str(i) for i in top_k],
+    ).model_dump_json()
+     
 
 
 if __name__ == "__main__":

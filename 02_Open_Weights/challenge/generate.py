@@ -8,6 +8,7 @@ ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(ROOT))
 
 from dotenv import load_dotenv
+
 load_dotenv(ROOT / ".env", override=True)
 
 from helpers.config import from_env
@@ -23,11 +24,14 @@ seeds = [
     if line.strip()
 ]
 
+
 def validate(row: dict) -> bool:
     return bool(row.get("input")) and bool(row.get("output"))
 
+
 # Azure needs api_key passed explicitly
 import litellm
+
 litellm.api_key = os.getenv("AZURE_API_KEY")
 
 rows, report = generate(

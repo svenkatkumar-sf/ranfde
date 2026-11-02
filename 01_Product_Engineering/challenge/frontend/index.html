@@ -3,95 +3,615 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Rename this. It is your app. -->
-    <title>Your AI Application</title>
+    <title>Maxi · The SuccessWeaver</title>
     <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --brand:       #0070d2;
+        --brand-dark:  #005fb2;
+        --brand-light: #e8f4ff;
+        --surface:     #ffffff;
+        --bg:          #f3f6fb;
+        --border:      #dde3ed;
+        --text:        #16325c;
+        --muted:       #5a6a85;
+        --red:         #c23934;
+        --red-bg:      #fde8e8;
+        --amber:       #9c6d00;
+        --amber-bg:    #fef3c7;
+        --blue:        #0070d2;
+        --blue-bg:     #e8f4ff;
+        --green:       #027a48;
+        --green-bg:    #d1fae5;
+        --radius:      10px;
+      }
+
       body {
-        font-family: system-ui, sans-serif;
-        max-width: 44rem;
-        margin: 2rem auto;
-        padding: 0 1rem;
-        line-height: 1.5;
+        font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── Header ── */
+      header {
+        background: var(--brand);
+        color: #fff;
+        padding: 0 2rem;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        flex-shrink: 0;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+      }
+      .brand-icon {
+        width: 32px;
+        height: 32px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+      }
+      .brand-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .brand-sub {
+        font-size: 0.72rem;
+        opacity: 0.8;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .header-badge {
+        font-size: 0.72rem;
+        background: rgba(255,255,255,0.18);
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        letter-spacing: 0.03em;
+      }
+
+      /* ── Layout ── */
+      .layout {
+        display: flex;
+        flex: 1;
+        max-width: 1100px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 1.75rem 1.25rem;
+        gap: 1.5rem;
+      }
+
+      /* ── Sidebar ── */
+      nav {
+        width: 180px;
+        flex-shrink: 0;
+      }
+      nav ul { list-style: none; }
+      nav li + li { margin-top: 0.2rem; }
+      nav button {
+        width: 100%;
+        text-align: left;
+        padding: 0.55rem 0.9rem;
+        border: none;
+        background: none;
+        border-radius: 7px;
+        font: inherit;
+        font-size: 0.9rem;
+        color: var(--muted);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        transition: background 0.1s, color 0.1s;
+      }
+      nav button:hover { background: var(--border); color: var(--text); }
+      nav button.active { background: var(--brand-light); color: var(--brand); font-weight: 600; }
+      .nav-icon { font-size: 1rem; width: 1.2rem; text-align: center; }
+      .nav-section {
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--muted);
+        padding: 0.9rem 0.9rem 0.35rem;
+      }
+
+      /* ── Main ── */
+      main { flex: 1; min-width: 0; }
+
+      .panel { display: none; }
+      .panel.active { display: block; }
+
+      /* ── Page title ── */
+      .page-header { margin-bottom: 1.4rem; }
+      .page-title { font-size: 1.2rem; font-weight: 700; color: var(--text); }
+      .page-desc { font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem; }
+
+      /* ── Card ── */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1.4rem 1.5rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      }
+      .card-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+        margin-bottom: 1rem;
+      }
+
+      /* ── Form ── */
+      .field { margin-bottom: 1rem; }
+      label {
+        display: block;
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--muted);
+        margin-bottom: 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+      select {
+        width: 100%;
+        padding: 0.6rem 0.85rem;
+        font: inherit;
+        font-size: 0.95rem;
+        color: var(--text);
+        border: 1.5px solid var(--border);
+        border-radius: 7px;
+        background: #fff;
+        transition: border-color 0.15s;
+        outline: none;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235a6a85' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.85rem center;
+        padding-right: 2.2rem;
+        cursor: pointer;
+      }
+      select:focus { border-color: var(--brand); }
+      input[type=text], textarea {
+        width: 100%;
+        padding: 0.6rem 0.85rem;
+        font: inherit;
+        font-size: 0.95rem;
+        color: var(--text);
+        border: 1.5px solid var(--border);
+        border-radius: 7px;
+        background: #fff;
+        transition: border-color 0.15s;
+        outline: none;
+      }
+      input[type=text]:focus, textarea:focus { border-color: var(--brand); }
+      textarea { resize: vertical; min-height: 5.5rem; line-height: 1.5; }
+
+      .form-row { display: flex; gap: 0.75rem; align-items: flex-end; }
+      .form-row .field { flex: 1; margin-bottom: 0; }
+
+      .btn {
+        padding: 0.6rem 1.4rem;
+        font: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 7px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.15s, opacity 0.15s;
+      }
+      .btn-primary { background: var(--brand); color: #fff; }
+      .btn-primary:hover { background: var(--brand-dark); }
+      .btn-primary:disabled { opacity: 0.5; cursor: default; }
+
+      .loading-row {
+        display: none;
+        align-items: center;
+        gap: 0.6rem;
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-top: 0.9rem;
+      }
+      .loading-row.visible { display: flex; }
+      .spinner-ring {
+        width: 16px; height: 16px;
+        border: 2px solid var(--border);
+        border-top-color: var(--brand);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        flex-shrink: 0;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* ── Sources bar ── */
+      .sources-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.1rem;
+        font-size: 0.82rem;
+        color: var(--muted);
+      }
+      .source-chip {
+        background: var(--brand-light);
+        color: var(--brand);
+        border: 1px solid #b3d7f5;
+        border-radius: 5px;
+        padding: 0.15rem 0.55rem;
+        font-weight: 600;
+        font-size: 0.78rem;
+        font-family: monospace;
+      }
+
+      /* ── Action cards ── */
+      .action-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--border);
+        border-radius: var(--radius);
+        padding: 1rem 1.1rem;
+        margin-bottom: 0.75rem;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+      }
+      .action-card.immediate  { border-left-color: var(--red); }
+      .action-card.this-week  { border-left-color: #f59e0b; }
+      .action-card.this-month { border-left-color: var(--blue); }
+      .action-card.this-quarter { border-left-color: var(--green); }
+
+      .action-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0.2rem 0.6rem;
+        border-radius: 5px;
+      }
+      .badge-immediate  { background: var(--red-bg);   color: var(--red);   }
+      .badge-this-week  { background: var(--amber-bg); color: var(--amber); }
+      .badge-this-month { background: var(--blue-bg);  color: var(--blue);  }
+      .badge-this-quarter { background: var(--green-bg); color: var(--green); }
+      .badge-category { background: #f0f2f5; color: var(--muted); }
+
+      .action-text {
+        font-size: 0.95rem;
+        line-height: 1.55;
+        color: var(--text);
+      }
+
+      /* ── Decline ── */
+      .decline-card {
+        background: #fff8e1;
+        border: 1px solid #ffe082;
+        border-radius: var(--radius);
+        padding: 1rem 1.1rem;
+        color: #7a5900;
+        font-size: 0.9rem;
+        display: flex;
+        gap: 0.6rem;
+        align-items: flex-start;
+      }
+      .decline-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.05rem; }
+
+      /* ── Chat panel ── */
+      .chat-wrap {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 160px);
+        min-height: 400px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        overflow: hidden;
       }
       #log {
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        padding: 1rem;
-        min-height: 20rem;
-        margin-bottom: 1rem;
-        white-space: pre-wrap;
+        flex: 1;
         overflow-y: auto;
+        padding: 1.25rem 1.4rem;
       }
       .turn { margin-bottom: 1rem; }
-      .who { font-weight: 600; }
-      form { display: flex; gap: 0.5rem; }
-      input { flex: 1; padding: 0.5rem; font: inherit; }
-      button { padding: 0.5rem 1rem; font: inherit; }
+      .turn-you .who { color: var(--brand); }
+      .turn-ai .who { color: var(--muted); }
+      .who { font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 0.2rem; }
+      .turn-text { font-size: 0.95rem; line-height: 1.55; white-space: pre-wrap; }
+      .chat-input-row {
+        border-top: 1px solid var(--border);
+        padding: 0.9rem 1.1rem;
+        display: flex;
+        gap: 0.6rem;
+        background: #fafbfd;
+      }
+      .chat-input-row input {
+        flex: 1;
+        padding: 0.6rem 0.85rem;
+        font: inherit;
+        font-size: 0.95rem;
+        border: 1.5px solid var(--border);
+        border-radius: 7px;
+        outline: none;
+        background: #fff;
+      }
+      .chat-input-row input:focus { border-color: var(--brand); }
     </style>
   </head>
   <body>
-    <h1>Your AI Application</h1>
-    <p>
-      This is a deliberately plain frontend. Making it good is your job — open
-      this file in VS Code and point Claude Code at it.
-    </p>
 
-    <div id="log"></div>
-    <form id="form">
-      <input id="input" placeholder="Ask something..." autocomplete="off" />
-      <button type="submit">Send</button>
-    </form>
+    <header>
+      <div class="brand">
+        <div class="brand-icon">🧵</div>
+        <div>
+          <div class="brand-name">Maxi · The SuccessWeaver</div>
+          <div class="brand-sub">AI-Powered CSM Intelligence</div>
+        </div>
+      </div>
+      <div class="header-badge">Beta</div>
+    </header>
+
+    <div class="layout">
+
+      <nav>
+        <div class="nav-section">Workspace</div>
+        <ul>
+          <li>
+            <button class="active" data-tab="solve">
+              <span class="nav-icon">⚡</span> Account Actions
+            </button>
+          </li>
+          <li>
+            <button data-tab="chat">
+              <span class="nav-icon">💬</span> Chat
+            </button>
+          </li>
+        </ul>
+      </nav>
+
+      <main>
+
+        <!-- Account Actions panel -->
+        <div id="panel-solve" class="panel active">
+          <div class="page-header">
+            <div class="page-title">Account Action Prioritizer</div>
+            <div class="page-desc">Enter an account name and context — Maxi retrieves relevant records and returns prioritized next actions with sources.</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Query</div>
+            <div class="form-row" style="margin-bottom:1rem">
+              <div class="field">
+                <label for="account-select">Account</label>
+                <select id="account-select">
+                  <option value="">— Select account —</option>
+                  <option value="NovaTech">NovaTech</option>
+                  <option value="OrionTech">OrionTech</option>
+                  <option value="NovaCorp">NovaCorp</option>
+                  <option value="OrionHealth">OrionHealth</option>
+                  <option value="Globex">Globex</option>
+                  <option value="__custom__">Custom…</option>
+                </select>
+              </div>
+              <div class="field" id="custom-field" style="display:none">
+                <label for="account-custom">Account name</label>
+                <input type="text" id="account-custom" placeholder="Type account name" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="context">Context / question</label>
+              <textarea id="context" placeholder="e.g. I have a cadence call this Thursday. What should I focus on and what do I need to prepare?"></textarea>
+            </div>
+            <button class="btn btn-primary" id="solve-btn">Get actions</button>
+            <div class="loading-row" id="solve-loading">
+              <div class="spinner-ring"></div>
+              Maxi is retrieving and reasoning…
+            </div>
+          </div>
+
+          <div id="solve-output"></div>
+        </div>
+
+        <!-- Chat panel -->
+        <div id="panel-chat" class="panel">
+          <div class="page-header">
+            <div class="page-title">Chat with Maxi</div>
+            <div class="page-desc">Ask anything about your accounts — Maxi retrieves relevant records and answers in context.</div>
+          </div>
+          <div class="chat-wrap">
+            <div id="log"></div>
+            <div class="chat-input-row">
+              <input id="chat-input" placeholder="Ask Maxi anything…" autocomplete="off" />
+              <button class="btn btn-primary" id="chat-send">Send</button>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
 
     <script type="module">
-      // NOTE: this loads the Gradio client from a public CDN. On a locked-down
-      // corporate network that request may simply fail. Worth noticing now --
-      // it is the kind of thing that turns a working demo into a broken one the
-      // moment it moves inside the firewall.
       import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
-
       const client = await Client.connect(window.location.origin);
-      const log = document.getElementById("log");
-      const form = document.getElementById("form");
-      const input = document.getElementById("input");
 
-      // The model has no memory. This array is the entire conversation.
-      const history = [];
+      // ── Nav ─────────────────────────────────────────────────────────
+      document.querySelectorAll("nav button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+          btn.classList.add("active");
+          document.getElementById("panel-" + btn.dataset.tab).classList.add("active");
+        });
+      });
 
-      function addTurn(who, text) {
-        const div = document.createElement("div");
-        div.className = "turn";
-        div.innerHTML = `<span class="who">${who}:</span> `;
-        const span = document.createElement("span");
-        div.appendChild(span);
-        span.textContent = text;
-        log.appendChild(div);
-        log.scrollTop = log.scrollHeight;
-        return span;
+      // ── Account dropdown ─────────────────────────────────────────────
+      const accountSelect = document.getElementById("account-select");
+      const customField   = document.getElementById("custom-field");
+      const accountCustom = document.getElementById("account-custom");
+
+      accountSelect.addEventListener("change", () => {
+        customField.style.display = accountSelect.value === "__custom__" ? "block" : "none";
+      });
+
+      function getAccountName() {
+        if (accountSelect.value === "__custom__") return accountCustom.value.trim();
+        return accountSelect.value;
       }
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const message = input.value.trim();
-        if (!message) return;
-        input.value = "";
+      // ── Solve ────────────────────────────────────────────────────────
+      const solveBtn     = document.getElementById("solve-btn");
+      const solveLoading = document.getElementById("solve-loading");
+      const solveOutput  = document.getElementById("solve-output");
 
-        addTurn("You", message);
-        const out = addTurn("Assistant", "");
+      const URGENCY_CLASS = {
+        "immediate":    "immediate",
+        "this week":    "this-week",
+        "this month":   "this-month",
+        "this quarter": "this-quarter",
+      };
 
-        // submit() streams; each event carries the reply so far.
-        let reply = "";
-        const job = client.submit("/chat", { message, history });
-        for await (const event of job) {
-          if (event.type === "data") {
-            reply = event.data[0];
-            out.textContent = reply;
-            log.scrollTop = log.scrollHeight;
+      const URGENCY_LABEL = {
+        "immediate":    "🔴 Immediate",
+        "this week":    "🟡 This Week",
+        "this month":   "🔵 This Month",
+        "this quarter": "🟢 This Quarter",
+      };
+
+      function renderSolve(data) {
+        if (!data.actions || data.actions.length === 0) {
+          solveOutput.innerHTML = `
+            <div class="decline-card">
+              <div class="decline-icon">⚠️</div>
+              <div>${data.message || "No relevant records found for this question."}</div>
+            </div>`;
+          return;
+        }
+
+        const chips = (data.sources || []).map(s =>
+          `<span class="source-chip">#${s}</span>`).join("");
+        let html = `
+          <div class="sources-bar">
+            <span>Retrieved records:</span>${chips}
+          </div>`;
+
+        for (const a of data.actions) {
+          const uk   = (a.urgency || "").toLowerCase();
+          const cls  = URGENCY_CLASS[uk] || "";
+          const ulbl = URGENCY_LABEL[uk] || a.urgency;
+          html += `
+            <div class="action-card ${cls}">
+              <div class="action-meta">
+                <span class="badge badge-${cls}">${ulbl}</span>
+                <span class="badge badge-category">${a.category}</span>
+              </div>
+              <div class="action-text">${a.action}</div>
+            </div>`;
+        }
+        solveOutput.innerHTML = html;
+      }
+
+      solveBtn.addEventListener("click", async () => {
+        const account_name = getAccountName();
+        const context      = document.getElementById("context").value.trim();
+        if (!context) return;
+
+        solveBtn.disabled = true;
+        solveLoading.classList.add("visible");
+        solveOutput.innerHTML = "";
+
+        try {
+          const job = client.submit("/solve", { account_name, context });
+          for await (const event of job) {
+            if (event.type === "data") {
+              const raw = event.data[0];
+              renderSolve(typeof raw === "string" ? JSON.parse(raw) : raw);
+            }
           }
+        } catch (err) {
+          solveOutput.innerHTML = `<div class="decline-card"><div class="decline-icon">⚠️</div><div>Error: ${err.message}</div></div>`;
+        } finally {
+          solveBtn.disabled = false;
+          solveLoading.classList.remove("visible");
+        }
+      });
+
+      // Also trigger on Enter in the context textarea (Shift+Enter = newline)
+      document.getElementById("context").addEventListener("keydown", e => {
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); solveBtn.click(); }
+      });
+
+      // ── Chat ─────────────────────────────────────────────────────────
+      const log      = document.getElementById("log");
+      const chatInput = document.getElementById("chat-input");
+      const chatSend  = document.getElementById("chat-send");
+      const history   = [];
+
+      function addTurn(who, isAI) {
+        const div = document.createElement("div");
+        div.className = "turn " + (isAI ? "turn-ai" : "turn-you");
+        div.innerHTML = `<div class="who">${who}</div>`;
+        const text = document.createElement("div");
+        text.className = "turn-text";
+        div.appendChild(text);
+        log.appendChild(div);
+        log.scrollTop = log.scrollHeight;
+        return text;
+      }
+
+      async function sendChat() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+        chatInput.value = "";
+        chatSend.disabled = true;
+
+        addTurn("You", false).textContent = message;
+        const out = addTurn("Maxi", true);
+
+        let reply = "";
+        try {
+          const job = client.submit("/chat", { message, history });
+          for await (const event of job) {
+            if (event.type === "data") {
+              reply = event.data[0];
+              out.textContent = reply;
+              log.scrollTop = log.scrollHeight;
+            }
+          }
+        } finally {
+          chatSend.disabled = false;
+          chatInput.focus();
         }
 
         history.push({ role: "user", content: message });
         history.push({ role: "assistant", content: reply });
-      });
+      }
+
+      chatSend.addEventListener("click", sendChat);
+      chatInput.addEventListener("keydown", e => { if (e.key === "Enter") sendChat(); });
     </script>
+
   </body>
 </html>

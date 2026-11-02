@@ -52,15 +52,29 @@ OpEx reduced, customer engagements increase, adoption grows, expansion revenue g
 
 **Your solution in one sentence.**
 
-A chat interface that gives a CSM the next best action along with the tools and data to complete it.
+A unified CSM portal that surfaces automated insights from connected systems (Salesforce, Anypoint Admin, Google Calendar, public news) and answers ad-hoc questions via chat — so a CSM spends time on customer work, not on piecing together signals.
 
-**Input → Output.** Be specific enough that someone could build it wrong and you
-would notice.
+**Two interaction modes — both required:**
+
+| Mode | Trigger | What happens |
+| --- | --- | --- |
+| **Proactive (push)** | Scheduled monitor or system event | Portal surfaces an alert with context and suggested action — S1 raised, vCore declining, QBR date approaching, leadership change detected |
+| **Reactive (pull)** | CSM asks a question in chat | Chat retrieves relevant records and returns prioritized next actions with sources |
+
+**Input → Output.** Be specific enough that someone could build it wrong and you would notice.
 
 | | |
 | --- | --- |
-| **In** | Account name + plain-text context (meeting notes, open items, renewal date, health signals) |
-| **Out** | Prioritized list of 3–5 next actions, each with category (Operations / Cadence / Renewal) and time horizon|
+| **In (proactive)** | Scheduled trigger + signal from source system (case severity, usage trend, calendar event, news item) |
+| **Out (proactive)** | Alert with account name, signal summary, and 1–3 suggested actions |
+| **In (reactive)** | Account name + plain-text context or question |
+| **Out (reactive)** | Prioritized list of 3–5 next actions, each with category (Operations / Cadence / Renewal / Escalation) and time horizon, with source record cited |
+
+**Source systems (v1 scope):**
+- Salesforce (OrgCS/Org62) — support cases (S1/S2 priority), account health
+- Anypoint Admin Portal — vCore usage trend, apps deployed/undeployed, user count
+- Google Calendar — cadence calls, QBRs, EBRs, renewal discussions
+- Corporate websites / public web — leadership changes, M&A, product launches
 
 ---
 

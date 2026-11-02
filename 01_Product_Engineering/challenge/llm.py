@@ -40,14 +40,14 @@ def count_tokens(messages: list[dict], model: str = MODEL) -> int:
     return token_counter(model=model, messages=messages)
 
 
-def stream_reply(message: str, history: list[dict] | None = None):
+def stream_reply(message: str, history: list[dict] | None = None, system: str | None = None):
     """Yield the assistant's reply as it arrives, one growing string at a time.
 
     `history` is a list of {"role": ..., "content": ...} dicts. We rebuild the
     full message list on every turn -- the model is stateless, so the
     conversation only exists because we keep sending it.
     """
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages = [{"role": "system", "content": system or SYSTEM_PROMPT}]
     messages.extend(history or [])
     messages.append({"role": "user", "content": message})
 

@@ -1,0 +1,10 @@
+{"question": "I have a cadence call with NovaTech this Thursday. What should I focus on and what do I need to prepare?", "gold": ["374"], "kind": "lookup"}
+{"question": "We have a QBR with OrionSystems next month. What applications have they deployed recently and what should go in the prep deck?", "gold": ["383", "337"], "kind": "multi-hop"}
+{"question": "How has OrionSoft's product adoption changed since they enrolled in Signature Success?", "gold": ["420", "436"], "kind": "multi-hop"}
+{"question": "NovaTech's vCore usage has been declining for two months. Is this an attrition risk and what should I do now?", "gold": ["365"], "kind": "lookup"}
+{"question": "Which of my accounts have cadence calls or meetings scheduled this week?", "gold": ["372", "382"], "kind": "multi-hop"}
+{"question": "A new Mulesoft feature was just announced. Which of my accounts would benefit most from it?", "gold": [], "kind": "decline"}
+{"question": "Is there any recent news about NovaCorp — leadership changes, M&A, or product launches — that I should know before my next call?", "gold": ["405", "408"], "kind": "lookup"}
+{"question": "NovaTech has raised multiple S1 and S2 cases this month. Is there a pattern and what should I escalate?", "gold": ["312", "314"], "kind": "lookup"}
+{"question": "Are there any upcoming sales events or public holidays at NovaCorp that the operations team should plan around?", "gold": [], "kind": "decline"}
+{"question": "Which of my accounts have a renewal coming up this quarter, and what actions should I take to prepare?", "gold": ["388", "392"], "kind": "multi-hop"}
