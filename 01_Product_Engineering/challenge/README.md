@@ -1045,6 +1045,14 @@ Ratio is well above 20× — model cost is negligible. The constraint is adoptio
 
 **Access or approval needed:** AI team sign-off on model selection; Platform Engineering for EKS deployment and Okta SSO wiring; legal/compliance review before processing customer account data at scale.
 
+### Week 3 — Retrieval swap
+
+**Data:** Replace synthetic corpus with three real sources I already have access to — Salesforce Case exports, Account Management records, and Google Calendar. All text, no scans or recordings. Embedding token count: ~94,400 tokens measured for 472 synthetic rows; real corpus will be larger but re-indexing only runs on delta updates so this is a one-time cost per refresh cycle.
+
+**Model or endpoint:** Azure OpenAI already whitelisted — `text-embedding-3-small` for embeddings, `gpt-4.1-mini` (deployed as `gpt-5-mini`) for answers. Corpus is text-only and can stay within the Azure tenant; no data leaves the network boundary.
+
+**Access or approval needed:** No additional approval required for data retrieval from Case exports, Account Management, or Google Calendar — access already exists. Shipping as a local container pilot first; no EKS deployment approval needed at this stage.
+
 ---
 
 ## What this challenge deposits for later
