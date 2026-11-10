@@ -37,7 +37,23 @@ cfg = from_env(ROOT)
 _rows = [json.loads(l) for l in CORPUS_PATH.read_text().splitlines() if l.strip()]
 _texts = [r["input"] for r in _rows]
 _bm25 = BM25Okapi([t.lower().split() for t in _texts])
-_corpus_vecs: np.ndarray = np.load(EMB_CACHE) if EMB_CACHE.exists() else None  # type: ignore
+if EMB_CACHE.exists():
+    _corpus_vecs: np.ndarray = np.load(EMB_CACHE)
+else:
+    # No cache — build embeddings at startup (one-time API call per deployment)
+    import os as _os
+    _model = _os.getenv("EMBED_MODEL", "text-embedding-3-small")
+    _api_base = _os.getenv("EMBED_API_BASE") or _os.getenv("AZURE_API_BASE")
+    _full_model = f"azure/{_model}" if _api_base and "azure" in _api_base else _model
+    _emb_resp = litellm.embedding(
+        model=_full_model,
+        input=_texts,
+        api_base=_api_base,
+        api_key=_os.getenv("EMBED_API_KEY") or _os.getenv("AZURE_API_KEY"),
+        api_version=_os.getenv("EMBED_API_VERSION", "2025-04-01-preview"),
+    )
+    _corpus_vecs = np.array([d["embedding"] for d in _emb_resp.data], dtype=np.float32)
+    np.save(EMB_CACHE, _corpus_vecs)
 
 TOP_K = 5
 DECLINE_THRESHOLD = 0.46  # cosine similarity below this → clearly off-domain, skip LLM call

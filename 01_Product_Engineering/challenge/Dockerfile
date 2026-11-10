@@ -10,7 +10,8 @@ WORKDIR /app
 
 # Copy the dependency manifests first. Docker caches layers, so dependencies
 # only reinstall when these change -- not on every code edit.
-COPY pyproject.toml uv.lock ./
+# Build context is the repo root: docker build -f 01_Product_Engineering/challenge/Dockerfile .
+COPY 01_Product_Engineering/challenge/pyproject.toml 01_Product_Engineering/challenge/uv.lock ./
 
 # Install from the LOCK, not from pyproject.toml. pyproject says "gradio>=6.0",
 # which resolves to whatever is newest on the day you build -- so an image built
@@ -19,11 +20,12 @@ COPY pyproject.toml uv.lock ./
 RUN uv export --frozen --no-dev --no-emit-project -o requirements.txt \
  && uv pip install --system --no-cache -r requirements.txt
 
-COPY llm.py app.py ./
-COPY frontend/ ./frontend/
+COPY 01_Product_Engineering/challenge/llm.py 01_Product_Engineering/challenge/app.py ./
+COPY 01_Product_Engineering/challenge/frontend/ ./frontend/
+COPY helpers/ ./helpers/
 
 # Don't run as root. Your security review will ask about this.
-RUN useradd --create-home appuser
+RUN useradd --create-home appuser && chown -R appuser /app
 USER appuser
 
 EXPOSE 7860
