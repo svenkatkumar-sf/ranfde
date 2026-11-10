@@ -1053,6 +1053,14 @@ Ratio is well above 20× — model cost is negligible. The constraint is adoptio
 
 **Access or approval needed:** No additional approval required for data retrieval from Case exports, Account Management, or Google Calendar — access already exists. Shipping as a local container pilot first; no EKS deployment approval needed at this stage.
 
+### Week 5 — Agent architecture swap
+
+**Data:** No change to the corpus at this stage. The second implementation (`solve_via_tool`) confirmed that tool-call overhead grows with response size — the 1,194-byte solve response adds ~538 extra tokens per query in a tool loop. When real data replaces the synthetic corpus, response size will grow, making the cost gap larger. The switch condition is adding multiple capabilities (get_cases, check_renewal) so the model can choose among them — not today's single-capability setup.
+
+**Model or endpoint:** Direct Gradio API call ships (one model call, ~10s latency). The tool-call loop is built and measured but held back until an orchestrating agent needs to pick between capabilities. Both use the same Azure OpenAI endpoint already in place.
+
+**Access or approval needed:** No new approvals needed. The Docker container runs locally with the existing `.env`. Moving the tool-call loop into a multi-agent orchestrator (Week 6+) would require the AI team to review the additional model-call budget — roughly 2× tokens per user query at current response sizes.
+
 ---
 
 ## What this challenge deposits for later
